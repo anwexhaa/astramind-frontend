@@ -1,5 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(9 9 11); /* same as bg-zinc-950 */
+  overflow-x: hidden;
+}
+html {
+  background-color: rgb(9 9 11); /* same as bg-zinc-950 */
+  min-height: 100%;
+  width: 100%;
+}
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -137,4 +151,47 @@
 
 .glow {
   text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+  }
+}
+h1 {
+  -webkit-text-stroke: 0 transparent !important;
+  text-shadow: none !important;
+}
+/* Sleek ChatGPT-like scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #555 0%, #777 100%);
+
+  border-radius: 100px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  opacity: 0.6;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 1;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #B6F2E5 transparent;
 }

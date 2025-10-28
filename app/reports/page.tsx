@@ -33,46 +33,62 @@ export default function ReportsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0f] to-[#111121] text-white px-6 py-10">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-semibold mb-10 bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
-          📊 Reports Overview
+    <div className="min-h-screen bg-black text-white px-6 py-16 flex flex-col items-center">
+      <div className="max-w-6xl w-full">
+        {/* Heading — moved slightly upward and away from dark bleed */}
+        <h1
+          className="text-4xl font-extrabold mb-12 text-center 
+          bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] 
+          bg-clip-text text-transparent 
+          [background-clip:text] [webkit-background-clip:text] [webkit-text-fill-color:transparent]
+          drop-shadow-none shadow-none border-none outline-none"
+          style={{
+            position: "relative",
+            zIndex: 2,
+            marginTop: "-0.5rem",
+          }}
+        >
+          Reports Overview
         </h1>
 
+        {/* Loading / Empty / Reports */}
         {loading ? (
-          <div className="text-gray-400 text-lg">Loading reports...</div>
+          <div className="text-zinc-400 text-lg text-center">Loading reports...</div>
         ) : reports.length === 0 ? (
-          <div className="text-gray-500 text-lg">
+          <div className="text-zinc-500 text-lg text-center">
             No reports yet. Upload one from{" "}
-            <span className="text-blue-400">Analyze</span> page.
+            <span className="text-[#F8C8DC] font-medium">Analyze</span> page.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
             {reports.map((r, i) => (
               <motion.div
                 key={r._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08 }}
                 onClick={() => setSelectedReport(r)}
-                className="relative group p-6 rounded-3xl border border-gray-800/60 bg-gray-900/40 backdrop-blur-xl cursor-pointer transition hover:border-blue-500/80 hover:shadow-[0_0_25px_rgba(56,189,248,0.3)]"
+                className="relative group p-6 rounded-3xl border border-zinc-800 
+                bg-gradient-to-br from-[#0b0b0b] via-[#111] to-[#0b0b0b] backdrop-blur-xl 
+                cursor-pointer hover:border-[#F8C8DC]/50 
+                hover:shadow-[0_0_25px_rgba(248,200,220,0.2)] transition-all"
               >
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/10 via-purple-600/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition"></div>
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#B6F2E5]/10 via-[#F8C8DC]/10 to-[#FFE6A7]/10 opacity-0 group-hover:opacity-100 transition"></div>
 
                 <div className="relative z-10">
-                  <h2 className="text-xl font-medium mb-3 text-white/90 truncate">
+                  <h2 className="text-lg font-semibold mb-3 text-white/90 truncate">
                     {r.filename}
                   </h2>
 
-                  <p className="text-sm text-gray-400 mb-4 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-zinc-400 mb-4 line-clamp-3 leading-relaxed">
                     {r.summary}
                   </p>
 
                   <div className="flex justify-between items-center">
-                    <p className="text-blue-400 text-sm">AI Score</p>
-                    <span className="text-2xl font-semibold text-cyan-300">
+                    <p className="text-[#F8C8DC] text-sm font-medium">AI Score</p>
+                    <span className="text-2xl font-semibold text-[#FFE6A7]">
                       {r.overall_score ?? r.score ?? "N/A"}
-                      <span className="text-sm text-gray-400">/100</span>
+                      <span className="text-sm text-zinc-500">/100</span>
                     </span>
                   </div>
                 </div>
@@ -82,7 +98,7 @@ export default function ReportsPage() {
         )}
       </div>
 
-      {/* 🔷 Report Modal */}
+      {/* Report Modal */}
       <AnimatePresence>
         {selectedReport && (
           <motion.div
@@ -93,26 +109,29 @@ export default function ReportsPage() {
             onClick={() => setSelectedReport(null)}
           >
             <motion.div
-              className="relative bg-gradient-to-b from-[#111122] to-[#0c0c15] border border-gray-800/70 shadow-[0_0_30px_rgba(56,189,248,0.25)] rounded-3xl w-[90%] max-w-3xl p-8"
+              className="relative bg-gradient-to-b from-[#111] to-[#0c0c0c] border border-zinc-800/70 
+              shadow-[0_0_30px_rgba(248,200,220,0.25)] rounded-3xl w-[90%] max-w-3xl p-8"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button */}
               <button
                 onClick={() => setSelectedReport(null)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+                className="absolute top-4 right-4 text-zinc-400 hover:text-[#F8C8DC] transition"
               >
                 <X size={22} />
               </button>
 
-              <h2 className="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+              <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] bg-clip-text text-transparent">
                 {selectedReport.filename}
               </h2>
 
-              <div className="max-h-[50vh] overflow-y-auto pr-2 mb-2 text-gray-300 text-sm leading-relaxed">
+              <div
+                className="max-h-[50vh] overflow-y-auto pr-3 text-zinc-300 text-sm leading-relaxed 
+                scrollbar-thin scrollbar-thumb-[#B6F2E5]/40 scrollbar-track-zinc-800/40 hover:scrollbar-thumb-[#F8C8DC]/60 transition-all"
+              >
                 {selectedReport.summary}
               </div>
             </motion.div>

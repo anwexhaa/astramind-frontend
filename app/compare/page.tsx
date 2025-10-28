@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { ArrowLeftRight, Loader2, Upload } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Report {
   _id: string;
@@ -20,7 +21,6 @@ export default function ComparePage() {
   const [comparisonResult, setComparisonResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Fetch saved reports
   useEffect(() => {
     async function fetchReports() {
       try {
@@ -33,28 +33,23 @@ export default function ComparePage() {
     fetchReports();
   }, []);
 
-  // 🔹 Upload file to backend and return its report object
   const uploadAndAnalyze = async (file: File) => {
     const formData = new FormData();
     formData.append("pdf", file);
     const res = await axios.post("http://localhost:3001/api/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return res.data.report; // must return { _id, filename, summary }
+    return res.data.report;
   };
 
-  // 🔹 Handle comparison
   const handleCompare = async () => {
     setLoading(true);
     setComparisonResult("");
-
     try {
       let reportA: Report | undefined;
       let reportB: Report | undefined;
 
-      // if user selected from saved
       if (selectedA) reportA = reports.find((r) => r._id === selectedA);
-      // if user uploaded new file
       if (fileA) reportA = await uploadAndAnalyze(fileA);
 
       if (selectedB) reportB = reports.find((r) => r._id === selectedB);
@@ -77,23 +72,32 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0f] to-[#111121] text-white px-6 py-10">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-semibold mb-10 bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
+    <div className="h-screen w-full bg-gradient-to-b from-[#0a0a0f] to-[#111111] text-white px-6 py-8 overflow-hidden">
+      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center h-full">
+        {/* Heading */}
+        <h1
+          className="text-4xl font-extrabold mb-10 text-center 
+          bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] 
+          bg-clip-text text-transparent 
+          [background-clip:text] [webkit-background-clip:text] [webkit-text-fill-color:transparent]
+          drop-shadow-none shadow-none border-none outline-none"
+        >
           ⚖️ Compare Reports
         </h1>
 
+        {/* Comparison Card */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="p-8 bg-gray-900/40 border border-gray-800/60 backdrop-blur-xl rounded-3xl shadow-[0_0_25px_rgba(56,189,248,0.15)]"
+          transition={{ duration: 0.35 }}
+          className="w-full max-w-5xl p-8 rounded-3xl border border-zinc-800/70 bg-[#0d0d0f]/70 backdrop-blur-xl 
+          shadow-[0_0_25px_rgba(248,200,220,0.15)]"
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center mb-8">
             {/* Report A */}
             <div className="flex flex-col gap-3">
               <select
-                className="bg-[#0d0d14] border border-gray-700/60 rounded-xl p-3 text-gray-200 focus:outline-none focus:border-cyan-400 transition"
+                className="bg-[#0d0d14] border border-zinc-700/60 rounded-xl p-3 text-gray-200 focus:outline-none focus:border-[#F8C8DC] transition"
                 value={selectedA}
                 onChange={(e) => {
                   setSelectedA(e.target.value);
@@ -108,8 +112,8 @@ export default function ComparePage() {
                 ))}
               </select>
 
-              <label className="flex items-center justify-center gap-2 bg-[#0d0d14] border border-gray-700/60 rounded-xl p-3 cursor-pointer hover:border-cyan-400 transition">
-                <Upload size={18} className="text-cyan-400" />
+              <label className="flex items-center justify-center gap-2 bg-[#0d0d14] border border-zinc-700/60 rounded-xl p-3 cursor-pointer hover:border-[#F8C8DC]/70 transition">
+                <Upload size={18} className="text-[#F8C8DC]" />
                 <span className="text-gray-300 text-sm">
                   {fileA ? fileA.name : "Or upload PDF A"}
                 </span>
@@ -127,14 +131,15 @@ export default function ComparePage() {
               </label>
             </div>
 
-            <div className="flex justify-center">
-              <ArrowLeftRight className="text-cyan-400" size={26} />
+            {/* Middle Icon */}
+            <div className="flex justify-center items-center">
+              <ArrowLeftRight className="text-[#FFE6A7]" size={28} />
             </div>
 
             {/* Report B */}
             <div className="flex flex-col gap-3">
               <select
-                className="bg-[#0d0d14] border border-gray-700/60 rounded-xl p-3 text-gray-200 focus:outline-none focus:border-cyan-400 transition"
+                className="bg-[#0d0d14] border border-zinc-700/60 rounded-xl p-3 text-gray-200 focus:outline-none focus:border-[#F8C8DC] transition"
                 value={selectedB}
                 onChange={(e) => {
                   setSelectedB(e.target.value);
@@ -149,8 +154,8 @@ export default function ComparePage() {
                 ))}
               </select>
 
-              <label className="flex items-center justify-center gap-2 bg-[#0d0d14] border border-gray-700/60 rounded-xl p-3 cursor-pointer hover:border-cyan-400 transition">
-                <Upload size={18} className="text-cyan-400" />
+              <label className="flex items-center justify-center gap-2 bg-[#0d0d14] border border-zinc-700/60 rounded-xl p-3 cursor-pointer hover:border-[#F8C8DC]/70 transition">
+                <Upload size={18} className="text-[#F8C8DC]" />
                 <span className="text-gray-300 text-sm">
                   {fileB ? fileB.name : "Or upload PDF B"}
                 </span>
@@ -173,15 +178,16 @@ export default function ComparePage() {
             <button
               onClick={handleCompare}
               disabled={
-                loading ||
-                (!selectedA && !fileA) ||
-                (!selectedB && !fileB)
+                loading || (!selectedA && !fileA) || (!selectedB && !fileB)
               }
-              className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-medium text-white hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 rounded-xl font-medium text-white 
+              bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] 
+              hover:shadow-[0_0_25px_rgba(248,200,220,0.4)] 
+              transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={18} /> Comparing...
+                  <Loader2 className="animate-spin text-[#FFE6A7]" size={18} /> Comparing...
                 </span>
               ) : (
                 "Compare"
@@ -190,20 +196,22 @@ export default function ComparePage() {
           </div>
         </motion.div>
 
-        {/* Comparison Result */}
+        {/* Result Section */}
         {comparisonResult && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-10 p-8 bg-gradient-to-b from-[#111122] to-[#0c0c15] border border-gray-800/70 rounded-3xl shadow-[0_0_30px_rgba(56,189,248,0.25)]"
+            transition={{ delay: 0.15 }}
+            className="mt-8 p-8 bg-gradient-to-b from-[#111] to-[#0c0c0c] border border-zinc-800/70 rounded-3xl 
+            shadow-[0_0_30px_rgba(248,200,220,0.25)] max-w-5xl overflow-hidden"
           >
-            <h2 className="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+            <h2 className="text-2xl font-semibold mb-5 text-transparent bg-clip-text bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7]">
               AI Comparison Result
             </h2>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-              {comparisonResult}
-            </p>
+            <div className="text-gray-300 text-sm leading-relaxed max-h-[35vh] overflow-y-auto pr-2 
+            scrollbar-thin scrollbar-thumb-[#F8C8DC]/40 scrollbar-track-zinc-800/30 hover:scrollbar-thumb-[#FFE6A7]/60">
+              <ReactMarkdown>{comparisonResult}</ReactMarkdown>
+            </div>
           </motion.div>
         )}
       </div>
