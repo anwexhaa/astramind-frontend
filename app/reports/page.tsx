@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {app} from "@/lib/firebase"; // ✅ default import — matches your firebase.ts
 
 interface Report {
   _id: string;
@@ -17,11 +19,31 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
+  // ✅ Get current user's email from Firebase Auth
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user?.email) {
+        setUserEmail(user.email);
+      } else {
+        setUserEmail(null);
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // ✅ Fetch user-specific reports
   useEffect(() => {
     async function fetchReports() {
+      if (!userEmail) return;
+
       try {
-        const response = await axios.get("http://localhost:3001/api/reports");
+        const response = await axios.get(
+          `http://localhost:3001/api/reports?email=${encodeURIComponent(userEmail)}`
+        );
         setReports(response.data.reports || []);
       } catch (error) {
         console.error("Error fetching reports:", error);
@@ -29,13 +51,14 @@ export default function ReportsPage() {
         setLoading(false);
       }
     }
+
     fetchReports();
-  }, []);
+  }, [userEmail]);
 
   return (
     <div className="min-h-screen bg-black text-white px-6 py-16 flex flex-col items-center">
       <div className="max-w-6xl w-full">
-        {/* Heading — moved slightly upward and away from dark bleed */}
+        {/* Heading */}
         <h1
           className="text-4xl font-extrabold mb-12 text-center 
           bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] 

@@ -1,11 +1,15 @@
+//analyze/page.tsx
+
 "use client";
 
 import { useState } from "react";
 import api from "@/lib/api";
 import { motion } from "framer-motion";
 import { Brain, FileUp } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-export default function PluginPage() {
+export default function AnalyzePage() {
+  const { user } = useAuth(); // ✅ access Firebase user
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -26,20 +30,30 @@ export default function PluginPage() {
       setError("Please select a PDF file first.");
       return;
     }
+    if (!user) {
+      setError("Please log in to analyze and save reports.");
+      return;
+    }
 
     try {
       setLoading(true);
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("userEmail", user.email || "");
+      formData.append("userId", user.uid);
 
+      // ✅ Analyze & auto-save report to DB
       const response = await api.post(
         `${process.env.NEXT_PUBLIC_API_BASE}/analyze`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
 
       setResult(response.data);
     } catch (err) {
+      console.error("❌ Analyze error:", err);
       setError("Failed to analyze report. Please try again.");
     } finally {
       setLoading(false);
@@ -58,8 +72,8 @@ export default function PluginPage() {
 
       {/* Subtitle */}
       <p className="text-zinc-400 text-center mb-10 max-w-xl leading-relaxed">
-        Upload any financial PDF to extract key insights, detect risk signals, and generate
-        AI-powered summaries — all processed securely within AstraMind.
+        Upload any financial PDF to extract key insights, detect risk signals,
+        and generate AI-powered summaries — all securely stored to your account.
       </p>
 
       {/* Upload Section */}
@@ -109,7 +123,7 @@ export default function PluginPage() {
       )}
 
       {/* Result Display */}
-      {result && (
+      {result && result.summary && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,7 +133,9 @@ export default function PluginPage() {
           <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] bg-clip-text text-transparent">
             Analysis Summary
           </h3>
-          <p className="text-sm text-zinc-400 leading-relaxed">{result.summary}</p>
+          <p className="text-sm text-zinc-400 leading-relaxed">
+            {result.summary}
+          </p>
         </motion.div>
       )}
     </div>

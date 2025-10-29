@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import axios from "axios";
 import Link from "next/link";
 import { Brain, UserPlus, Sparkles } from "lucide-react";
 
@@ -24,7 +25,16 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 🔗 Sync Firebase user with MongoDB
+      await axios.post("http://localhost:3001/api/auth/sync", {
+        firebaseUID: user.uid,
+        email: user.email,
+        name: user.displayName || user.email?.split("@")[0],
+      });
+
       router.push("/");
     } catch (err: any) {
       alert(err.message);
@@ -79,42 +89,34 @@ export default function SignupPage() {
           onSubmit={handleSignup}
           className="flex flex-col gap-5 w-96 bg-zinc-900/30 backdrop-blur-xl p-8 rounded-3xl border border-zinc-700/50 shadow-2xl shadow-[#F8C8DC]/10 hover:shadow-[#F8C8DC]/20 transition-all duration-500"
         >
-          <div className="relative">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full p-4 rounded-2xl bg-black/40 border border-zinc-600 focus:border-[#B6F2E5] focus:ring-2 focus:ring-[#B6F2E5]/20 outline-none text-white placeholder-zinc-500 transition-all duration-300 hover:border-zinc-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="relative">
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-4 rounded-2xl bg-black/40 border border-zinc-600 focus:border-[#F8C8DC] focus:ring-2 focus:ring-[#F8C8DC]/20 outline-none text-white placeholder-zinc-500 transition-all duration-300 hover:border-zinc-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-4 rounded-2xl bg-black/40 border border-zinc-600 focus:border-[#B6F2E5] focus:ring-2 focus:ring-[#B6F2E5]/20 outline-none text-white placeholder-zinc-500 transition-all duration-300 hover:border-zinc-500"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-4 rounded-2xl bg-black/40 border border-zinc-600 focus:border-[#F8C8DC] focus:ring-2 focus:ring-[#F8C8DC]/20 outline-none text-white placeholder-zinc-500 transition-all duration-300 hover:border-zinc-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 px-8 py-4 rounded-2xl font-bold text-black bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] shadow-[0_0_40px_rgba(248,200,220,0.4)] hover:shadow-[0_0_60px_rgba(248,200,220,0.6)] hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-[0_0_40px_rgba(248,200,220,0.4)] relative overflow-hidden group"
+            className="mt-4 px-8 py-4 rounded-2xl font-bold text-black bg-gradient-to-r from-[#B6F2E5] via-[#F8C8DC] to-[#FFE6A7] shadow-[0_0_40px_rgba(248,200,220,0.4)] hover:shadow-[0_0_60px_rgba(248,200,220,0.6)] hover:scale-105 transition-all duration-300 disabled:opacity-50"
           >
-            <span className="relative z-10">{loading ? "Creating Account..." : "Sign Up"}</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFE6A7] via-[#F8C8DC] to-[#B6F2E5] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
         <p className="mt-6 text-sm text-zinc-400">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="text-[#B6F2E5] hover:text-[#F8C8DC] underline underline-offset-4 decoration-2 transition-all duration-300 hover:decoration-[#FFE6A7] font-medium"
-          >
+          <Link href="/login" className="text-[#B6F2E5] hover:text-[#F8C8DC] underline underline-offset-4 decoration-2 transition-all duration-300 hover:decoration-[#FFE6A7] font-medium">
             Log in
           </Link>
         </p>
