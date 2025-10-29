@@ -14,7 +14,8 @@ export default function MarketPage() {
         const symbols = ["AAPL", "MSFT", "TSLA", "AMZN", "GOOGL"];
         const results = await Promise.all(
           symbols.map(async (s) => {
-            const res = await fetch(`http://localhost:3001/api/plugin/stock/${s}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/plugin/stock/${s}`
+);
             const data = await res.json();
             const randomChange = (Math.random() * 2 - 1).toFixed(2); // fake daily % change
             return {

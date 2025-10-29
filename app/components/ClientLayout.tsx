@@ -21,7 +21,8 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          await axios.post("http://localhost:3001/api/auth/sync", {
+          await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/sync`
+, {
             firebaseUID: user.uid,
             email: user.email,
             name: user.displayName,

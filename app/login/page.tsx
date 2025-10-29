@@ -29,7 +29,8 @@ export default function LoginPage() {
       const user = userCredential.user;
 
       // 🔗 Sync Firebase user with MongoDB
-      await axios.post("http://localhost:3001/api/auth/sync", {
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/sync`
+, {
         firebaseUID: user.uid,
         email: user.email,
         name: user.displayName || user.email?.split("@")[0],

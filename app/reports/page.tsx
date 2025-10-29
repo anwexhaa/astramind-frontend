@@ -42,7 +42,8 @@ export default function ReportsPage() {
 
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/reports?email=${encodeURIComponent(userEmail)}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/reports?email=${encodeURIComponent(userEmail)}`
+
         );
         setReports(response.data.reports || []);
       } catch (error) {

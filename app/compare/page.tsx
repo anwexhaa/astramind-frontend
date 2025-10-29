@@ -24,7 +24,8 @@ export default function ComparePage() {
   useEffect(() => {
     async function fetchReports() {
       try {
-        const response = await axios.get("http://localhost:3001/api/reports");
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/reports`
+);
         setReports(response.data.reports || []);
       } catch (error) {
         console.error("Error fetching reports:", error);
@@ -36,7 +37,8 @@ export default function ComparePage() {
   const uploadAndAnalyze = async (file: File) => {
     const formData = new FormData();
     formData.append("pdf", file);
-    const res = await axios.post("http://localhost:3001/api/upload", formData, {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`
+, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data.report;
@@ -57,7 +59,8 @@ export default function ComparePage() {
 
       if (!reportA || !reportB) throw new Error("Missing report data");
 
-      const response = await axios.post("http://localhost:3001/api/compare", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/compare`
+, {
         reportA,
         reportB,
       });

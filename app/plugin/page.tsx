@@ -24,7 +24,8 @@ export default function PluginPage() {
   useEffect(() => {
     const fetchStock = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/plugin/stock/history/AAPL");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/plugin/stock/history/AAPL`
+);
         const json = await res.json();
 
         if (json.success && json.history) {

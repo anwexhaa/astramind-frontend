@@ -31,7 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // 🔄 Sync Firebase user with MongoDB when logged in
       if (u) {
         try {
-          const baseUrl = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001";
+          const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 
           await fetch(`${baseUrl}/api/user/sync`, {
             method: "POST",
