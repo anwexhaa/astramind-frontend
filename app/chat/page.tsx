@@ -16,6 +16,22 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
 
+  /* ✅ Load messages from localStorage on mount */
+  useEffect(() => {
+    const saved = localStorage.getItem("astramind_chat");
+    if (saved) {
+      setMessages(JSON.parse(saved));
+    }
+  }, []);
+
+  /* ✅ Save messages to localStorage whenever they change */
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("astramind_chat", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  /* ✅ Auto-scroll to bottom */
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -120,10 +136,9 @@ export default function ChatPage() {
                     : "bg-[#0d0d0d]/80 text-gray-200 border border-zinc-800/40"
                 }`}
               >
-                {/* @ts-ignore */}
                 <div className="prose prose-invert max-w-none">
-  <ReactMarkdown>{m.text}</ReactMarkdown>
-</div>
+                  <ReactMarkdown>{m.text}</ReactMarkdown>
+                </div>
               </div>
             </div>
           </motion.div>
