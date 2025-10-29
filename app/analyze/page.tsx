@@ -44,7 +44,7 @@ export default function AnalyzePage() {
 
       // ✅ Analyze & auto-save report to DB
       const response = await api.post(
-        `${process.env.NEXT_PUBLIC_API_BASE}/analyze`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/analyze`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
