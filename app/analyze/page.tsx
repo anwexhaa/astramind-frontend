@@ -51,9 +51,11 @@ export default function AnalyzePage() {
       );
 
       setResult(response.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error("❌ Analyze error:", err);
-      setError("Failed to analyze report. Please try again.");
+      // Show the backend's reason (e.g. "File too large", expired login)
+      const reason = err?.response?.data?.error;
+      setError(reason ? `Failed to analyze report: ${reason}` : "Failed to analyze report. Please try again.");
     } finally {
       setLoading(false);
     }
