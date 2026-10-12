@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -41,10 +41,8 @@ export default function ReportsPage() {
       if (!userEmail) return;
 
       try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/reports?email=${encodeURIComponent(userEmail)}`
-
-        );
+        // The backend returns only the signed-in user's reports
+        const response = await api.get("/api/reports");
         setReports(response.data.reports || []);
       } catch (error) {
         console.error("Error fetching reports:", error);

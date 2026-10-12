@@ -24,28 +24,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
+    // Syncing the user to MongoDB happens in ClientLayout (POST /api/auth/sync)
+    const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
-
-      // 🔄 Sync Firebase user with MongoDB when logged in
-      if (u) {
-        try {
-          const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-
-          await fetch(`${baseUrl}/api/user/sync`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: u.email,
-              firebaseUID: u.uid,
-            }),
-          });
-        } catch (err) {
-          console.error("❌ Failed to sync user:", err);
-        }
-      }
     });
 
     return () => unsub();

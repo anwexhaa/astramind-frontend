@@ -39,12 +39,11 @@ export default function AnalyzePage() {
       setLoading(true);
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("userEmail", user.email || "");
-      formData.append("userId", user.uid);
 
       // ✅ Analyze & auto-save report to DB
+      // The backend links the report to the user from the auth token
       const response = await api.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/analyze`,
+        "/analyze",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { motion } from "framer-motion";
 import { ArrowLeftRight, Loader2, Upload } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -24,8 +24,7 @@ export default function ComparePage() {
   useEffect(() => {
     async function fetchReports() {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/reports`
-);
+        const response = await api.get("/api/reports");
         setReports(response.data.reports || []);
       } catch (error) {
         console.error("Error fetching reports:", error);
@@ -37,8 +36,7 @@ export default function ComparePage() {
   const uploadAndAnalyze = async (file: File) => {
     const formData = new FormData();
     formData.append("pdf", file);
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`
-, formData, {
+    const res = await api.post("/api/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data.report;
@@ -59,7 +57,7 @@ export default function ComparePage() {
 
       if (!reportA || !reportB) throw new Error("Missing report data");
 
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/compare`
+      const response = await api.post("/api/compare"
 , {
         reportA,
         reportB,

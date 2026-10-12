@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send, Bot, User, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import { authHeaders } from "@/lib/api";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -49,7 +50,7 @@ export default function ChatPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/chat`
 , {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await authHeaders()) },
         body: JSON.stringify({ query: input }),
       });
 

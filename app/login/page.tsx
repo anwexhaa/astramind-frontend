@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import axios from "axios";
+import api from "@/lib/api";
 import Link from "next/link";
 import { Brain, LogIn, Sparkles } from "lucide-react";
 
@@ -25,16 +25,10 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      await signInWithEmailAndPassword(auth, email, password);
 
       // 🔗 Sync Firebase user with MongoDB
-      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/sync`
-, {
-        firebaseUID: user.uid,
-        email: user.email,
-        name: user.displayName || user.email?.split("@")[0],
-      });
+      await api.post("/api/auth/sync");
 
       router.push("/");
     } catch (err: any) {
